@@ -16,7 +16,7 @@
 </p>
 
 
-<img src="image/00.png" alt="RuoYi AI Logo" width="120" height="120">
+<img src="ruoyi-ai/image/00.png" alt="RuoYi AI Logo" width="120" height="120">
 
 
 
