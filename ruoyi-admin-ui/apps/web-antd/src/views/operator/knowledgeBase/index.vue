@@ -124,11 +124,9 @@ const headerStyle = {
   textAlign: 'right',
   height: 64,
   lineHeight: '64px',
-  backgroundColor: '#fff',
 };
 
 const contentStyle = {
-  backgroundColor: '#fff',
   flex: '1',
   overflow: 'auto', // 内容过多时可滚动
 };
@@ -219,35 +217,33 @@ const handleSubmit = () => {
 
 <template>
   <div>
-    <Space direction="vertical" :style="{ width: '100%' }" :size="[0, 48]">
-      <Layout style="height: 100%">
-        <LayoutHeader :style="headerStyle">
-          <Button type="primary" @click="handleAdd">新增</Button>
-        </LayoutHeader>
-        <LayoutContent :style="contentStyle">
-          <Table :columns="columns" :data-source="data">
-            <template #bodyCell="{ column, record }">
-              <span v-if="column.key === 'action'">
-                <Popconfirm
-                  title="确定删除吗？"
-                  ok-text="是"
-                  cancel-text="否"
-                  @confirm="handleDelete(record)"
-                >
-                  <Button type="primary" danger style="margin-right: 10px">
-                    删除
-                  </Button>
-                </Popconfirm>
+    <Layout style="height: 100%; background: transparent;">
+      <LayoutHeader :style="headerStyle">
+        <Button type="primary" @click="handleAdd">新增</Button>
+      </LayoutHeader>
+      <LayoutContent :style="contentStyle">
+        <Table :columns="columns" :data-source="data">
+          <template #bodyCell="{ column, record }">
+            <span v-if="column.key === 'action'">
+              <Popconfirm
+                title="确定删除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDelete(record)"
+              >
+                <Button type="primary" danger style="margin-right: 10px">
+                  删除
+                </Button>
+              </Popconfirm>
 
-                <Button type="primary" @click="handleAttachment(record)"
-                  >附件</Button
-                >
-              </span>
-            </template>
-          </Table>
-        </LayoutContent>
-      </Layout>
-    </Space>
+              <Button type="primary" @click="handleAttachment(record)"
+                >附件</Button
+              >
+            </span>
+          </template>
+        </Table>
+      </LayoutContent>
+    </Layout>
 
     <Drawer
       title="知识片段"
@@ -411,3 +407,17 @@ const handleSubmit = () => {
     </Drawer>
   </div>
 </template>
+
+<style scoped>
+:deep(.ant-layout) {
+  background: transparent !important;
+}
+
+:deep(.ant-layout-header) {
+  background: transparent !important;
+}
+
+:deep(.ant-layout-content) {
+  background: transparent !important;
+}
+</style>
