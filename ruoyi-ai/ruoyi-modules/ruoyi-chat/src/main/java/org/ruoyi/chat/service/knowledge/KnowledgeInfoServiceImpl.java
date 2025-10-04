@@ -310,6 +310,9 @@ public class KnowledgeInfoServiceImpl implements IKnowledgeInfoService {
      * @param knowledgeInfo 知识库
      */
     public void check(KnowledgeInfo knowledgeInfo) {
+        if (knowledgeInfo == null) {
+            throw new RuntimeException("知识库不存在");
+        }
         LoginUser loginUser = LoginHelper.getLoginUser();
         if (!knowledgeInfo.getUid().equals(loginUser.getUserId())) {
             throw new SecurityException("权限不足");
