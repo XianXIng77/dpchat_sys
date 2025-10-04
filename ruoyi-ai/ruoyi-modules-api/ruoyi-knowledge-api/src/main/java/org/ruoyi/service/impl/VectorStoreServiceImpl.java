@@ -136,9 +136,11 @@ public class VectorStoreServiceImpl implements VectorStoreService {
     }
     @Override
     public List<String> getQueryVector(QueryVectorBo queryVectorBo) {
+        log.info("🚀 开始向量检索 - 知识库ID: {}, 查询内容: {}", queryVectorBo.getKid(), queryVectorBo.getQuery());
         createSchema(queryVectorBo.getKid(), queryVectorBo.getVectorModelName());
         EmbeddingModel embeddingModel = getEmbeddingModel(queryVectorBo.getEmbeddingModelName(),
                 queryVectorBo.getApiKey(), queryVectorBo.getBaseUrl());
+        log.info("📊 开始向量化查询内容，使用模型: {}", queryVectorBo.getEmbeddingModelName());
         Embedding queryEmbedding = embeddingModel.embed(queryVectorBo.getQuery()).content();
         float[] vector = queryEmbedding.vector();
         List<String> vectorStrings = new ArrayList<>();
@@ -147,7 +149,7 @@ public class VectorStoreServiceImpl implements VectorStoreService {
         }
         String vectorStr = String.join(",", vectorStrings);
         String className = configService.getConfigValue("weaviate", "classname") ;
-        // 构建 GraphQL 查询
+        // 构建 GraphQL 查询（包含相似度分数）
         String graphQLQuery = String.format(
                 "{\n" +
                         "  Get {\n" +
@@ -158,6 +160,7 @@ public class VectorStoreServiceImpl implements VectorStoreService {
                         "      docId\n" +
                         "      _additional {\n" +
                         "        distance\n" +
+                        "        certainty\n" +
                         "        id\n" +
                         "      }\n" +
                         "    }\n" +
@@ -168,6 +171,7 @@ public class VectorStoreServiceImpl implements VectorStoreService {
                 queryVectorBo.getMaxResults()
         );
 
+        log.info("🔍 执行Weaviate向量搜索查询");
         Result<GraphQLResponse> result = client.graphQL().raw().withQuery(graphQLQuery).run();
         List<String> resultList = new ArrayList<>();
         if (result != null && !result.hasErrors()) {
@@ -175,14 +179,40 @@ public class VectorStoreServiceImpl implements VectorStoreService {
             JSONObject entries = new JSONObject(data);
             Map<String, cn.hutool.json.JSONArray> entriesMap = entries.get("Get", Map.class);
             cn.hutool.json.JSONArray objects = entriesMap.get(className + queryVectorBo.getKid());
+            log.info("📊 Weaviate查询完成，找到 {} 条向量记录", objects.size());
+            
             if(objects.isEmpty()){
+                log.warn("⚠️ 没有找到相关的向量数据");
                 return resultList;
             }
-            for (Object object : objects) {
-                Map<String, String> map = (Map<String, String>) object;
-                String content = map.get("text");
-                resultList.add( content);
+            
+            // 记录每条结果的详细信息
+            for (int i = 0; i < objects.size(); i++) {
+                Object object = objects.get(i);
+                Map<String, Object> map = (Map<String, Object>) object;
+                String content = (String) map.get("text");
+                String fid = (String) map.get("fid");
+                String docId = (String) map.get("docId");
+                
+                // 获取相似度信息
+                Map<String, Object> additional = (Map<String, Object>) map.get("_additional");
+                Double distance = additional != null ? (Double) additional.get("distance") : null;
+                Double certainty = additional != null ? (Double) additional.get("certainty") : null;
+                
+                // 计算相似度百分比（certainty * 100）
+                String similarityPercent = certainty != null ? String.format("%.2f%%", certainty * 100) : "未知";
+                
+                log.info("📄 向量结果[{}] - 相似度: {}, 距离: {}, 文档ID: {}, 片段ID: {}", 
+                        i + 1, similarityPercent, distance, docId, fid);
+                
+                // 记录内容预览（前150字符）
+                String preview = content.length() > 150 ? content.substring(0, 150) + "..." : content;
+                log.info("📝 内容预览[{}]: {}", i + 1, preview);
+                
+                resultList.add(content);
             }
+            
+            log.info("✅ 向量检索成功，返回 {} 条相关文档", resultList.size());
             return resultList;
         } else {
             log.error("GraphQL 查询失败: {}", result.getError());

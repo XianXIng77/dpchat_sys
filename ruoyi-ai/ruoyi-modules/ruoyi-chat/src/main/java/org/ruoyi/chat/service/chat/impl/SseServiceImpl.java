@@ -265,9 +265,16 @@ public class SseServiceImpl implements ISseService {
      * 处理知识库相关逻辑
      */
     private String processKnowledgeBase(ChatRequest chatRequest, List<Message> messages) {
+        // 记录用户消息
+        String userMessage = chatRequest.getMessages().get(chatRequest.getMessages().size() - 1).getContent().toString();
+        log.info("💬 用户消息: {}", userMessage);
+        
         if (StringUtils.isEmpty(chatRequest.getKid())) {
+            log.warn("⚠️ 知识库ID为空，跳过RAG检索");
             return getPromptTemplatePrompt(promptTemplateEnum.VECTOR.getDesc());
         }
+        
+        log.info("🔍 开始RAG检索，知识库ID: {}", chatRequest.getKid());
 
         try {
             // 查询知识库信息
@@ -286,9 +293,19 @@ public class SseServiceImpl implements ISseService {
 
             // 构建向量查询参数
             QueryVectorBo queryVectorBo = buildQueryVectorBo(chatRequest, knowledgeInfoVo, chatModel);
+            log.info("🔍 向量搜索参数 - 知识库: {}, 模型: {}, 检索数量: {}", 
+                    queryVectorBo.getKid(), queryVectorBo.getEmbeddingModelName(), queryVectorBo.getMaxResults());
 
             // 获取向量查询结果
             List<String> nearestList = vectorStoreService.getQueryVector(queryVectorBo);
+            log.info("📊 RAG检索结果 - 找到 {} 条相关文档", nearestList.size());
+            
+            // 记录检索到的文档内容（前100字符）
+            for (int i = 0; i < nearestList.size(); i++) {
+                String content = nearestList.get(i);
+                String preview = content.length() > 100 ? content.substring(0, 100) + "..." : content;
+                log.info("📄 检索文档[{}]: {}", i + 1, preview);
+            }
 
             // 添加知识库消息到上下文
             addKnowledgeMessages(messages, nearestList);
@@ -297,7 +314,7 @@ public class SseServiceImpl implements ISseService {
             return getKnowledgeSystemPrompt(knowledgeInfoVo);
 
         } catch (Exception e) {
-            log.error("处理知识库信息失败: {}", e.getMessage(), e);
+            log.error("❌ RAG处理失败: {}", e.getMessage(), e);
             return getPromptTemplatePrompt(promptTemplateEnum.VECTOR.getDesc());
         }
     }
