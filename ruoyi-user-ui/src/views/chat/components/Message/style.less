@@ -1,138 +1,391 @@
-.markdown-body {
-	background-color: transparent;
-	font-size: 14px;
-
-	p {
-		white-space: pre-wrap;
-	}
-
-	ol {
-		list-style-type: decimal;
-	}
-
-	ul {
-		list-style-type: disc;
-	}
-	img{
-		max-width: 400px;
-	}
-
-	pre code,
-	pre tt {
-		line-height: 1.65;
-	}
-
-	.highlight pre,
-	pre {
-		background-color: #fff;
-	}
-
-	code.hljs {
-		padding: 0;
-	}
-
-	.code-block {
-		&-wrapper {
-			position: relative;
-			padding-top: 24px;
-		}
-
-		&-header {
-			position: absolute;
-			top: 5px;
-			right: 0;
-			width: 100%;
-			padding: 0 1rem;
-			display: flex;
-			justify-content: flex-end;
-			align-items: center;
-			color: #b3b3b3;
-
-			&__copy {
-				cursor: pointer;
-				margin-left: 0.5rem;
-				user-select: none;
-
-				&:hover {
-					color: #65a665;
-				}
-			}
-		}
-	}
-
-
-	&.markdown-body-generate>dd:last-child:after,
-	&.markdown-body-generate>dl:last-child:after,
-	&.markdown-body-generate>dt:last-child:after,
-	&.markdown-body-generate>h1:last-child:after,
-	&.markdown-body-generate>h2:last-child:after,
-	&.markdown-body-generate>h3:last-child:after,
-	&.markdown-body-generate>h4:last-child:after,
-	&.markdown-body-generate>h5:last-child:after,
-	&.markdown-body-generate>h6:last-child:after,
-	&.markdown-body-generate>li:last-child:after,
-	&.markdown-body-generate>ol:last-child li:last-child:after,
-	&.markdown-body-generate>p:last-child:after,
-	&.markdown-body-generate>pre:last-child code:after,
-	&.markdown-body-generate>td:last-child:after,
-	&.markdown-body-generate>ul:last-child li:last-child:after {
-		animation: blink 1s steps(5, start) infinite;
-		color: #000;
-		content: '_';
-		font-weight: 700;
-		margin-left: 3px;
-		vertical-align: baseline;
-	}
-
-	@keyframes blink {
-		to {
-			visibility: hidden;
-		}
-	}
+// 消息容器样式
+.message-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.3s ease-out forwards;
 }
 
+// 消息淡入动画
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 消息气泡样式
+.message-wrap {
+  max-width: 70%;
+  word-wrap: break-word;
+  word-break: break-word;
+  position: relative;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin: 0 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+// 用户消息样式（右侧）
+.message-request {
+  background: linear-gradient(135deg, #4a9eff 0%, #66b3ff 100%);
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+}
+
+// AI消息样式（左侧）
+.message-reply {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf2 100%);
+  color: #333;
+  border-bottom-left-radius: 6px;
+}
+
+// 暗黑模式样式
 html.dark {
-
-	.markdown-body {
-
-		&.markdown-body-generate>dd:last-child:after,
-		&.markdown-body-generate>dl:last-child:after,
-		&.markdown-body-generate>dt:last-child:after,
-		&.markdown-body-generate>h1:last-child:after,
-		&.markdown-body-generate>h2:last-child:after,
-		&.markdown-body-generate>h3:last-child:after,
-		&.markdown-body-generate>h4:last-child:after,
-		&.markdown-body-generate>h5:last-child:after,
-		&.markdown-body-generate>h6:last-child:after,
-		&.markdown-body-generate>li:last-child:after,
-		&.markdown-body-generate>ol:last-child li:last-child:after,
-		&.markdown-body-generate>p:last-child:after,
-		&.markdown-body-generate>pre:last-child code:after,
-		&.markdown-body-generate>td:last-child:after,
-		&.markdown-body-generate>ul:last-child li:last-child:after {
-			color: #65a665;
-		}
-	}
-
-	.message-reply {
-		.whitespace-pre-wrap {
-			white-space: pre-wrap;
-			color: var(--n-text-color);
-		}
-	}
-
-	.highlight pre,
-	pre {
-		background-color: #282c34;
-	}
+  .message-reply {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    color: #e2e8f0;
+  }
+  
+  .message-request {
+    background: linear-gradient(135deg, #3182ce 0%, #3182ce 100%);
+  }
 }
 
-@media screen and (max-width: 533px) {
-	.markdown-body .code-block-wrapper {
-		padding: unset;
+// 消息内容样式
+.markdown-body {
+  background-color: transparent;
+  font-size: 14px;
+  line-height: 1.6;
 
-		code {
-			padding: 24px 16px 16px 16px;
-		}
-	}
+  p {
+    margin: 0 0 12px 0;
+    white-space: pre-wrap;
+  }
+  
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  ol {
+    list-style-type: decimal;
+    padding-left: 24px;
+  }
+
+  ul {
+    list-style-type: disc;
+    padding-left: 24px;
+  }
+  
+  img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+  
+  img:hover {
+    transform: scale(1.02);
+  }
+
+  a {
+    color: #3182ce;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  a:hover {
+    color: #2c5aa0;
+  }
+  
+  a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #3182ce;
+    transition: width 0.2s ease;
+  }
+  
+  a:hover::after {
+    width: 100%;
+  }
+}
+
+// 代码块样式
+.code-block {
+  &-wrapper {
+    position: relative;
+    margin: 12px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    transition: transform 0.2s ease;
+  }
+  
+  &-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  &-header__lang {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+  }
+  
+  &-header__copy {
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  &-header__copy:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #3182ce;
+  }
+}
+
+// 代码块内容样式
+.code-block-body {
+  display: block;
+  padding: 16px;
+  padding-top: 40px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre;
+  border-radius: 0 0 8px 8px;
+}
+
+// 暗黑模式代码块样式
+html.dark {
+  .code-block-wrapper {
+    background-color: #1e293b;
+  }
+  
+  .code-block-header {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .code-block-header__lang,
+  .code-block-header__copy {
+    color: #cbd5e1;
+  }
+}
+
+// 正在生成动画效果
+.markdown-body-generate > p:last-child:after {
+  content: '_';
+  animation: blink 1s steps(2, start) infinite;
+  margin-left: 2px;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+// 状态标签样式
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+// 暗黑模式状态标签
+html.dark {
+  .status-tag {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+  }
+}
+
+// 头像悬停效果
+.avatar-container {
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
+.avatar-container:hover {
+  transform: scale(1.1);
+}
+
+// 消息操作按钮容器
+.message-actions {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  gap: 4px;
+}
+
+.message-wrap:hover .message-actions {
+  opacity: 1;
+}
+
+// 操作按钮样式
+.action-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+
+// 暗黑模式操作按钮
+html.dark .action-button {
+  background-color: #333;
+}
+
+html.dark .action-button:hover {
+  background-color: #444;
+}
+
+// 响应式布局
+@media screen and (max-width: 768px) {
+  .message-wrap {
+    max-width: 85%;
+    padding: 10px 14px;
+  }
+  
+  .markdown-body {
+    font-size: 13px;
+  }
+}
+
+// 深色主题动画效果
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+// 点赞效果
+@keyframes likeAnimation {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.like-animation {
+  animation: likeAnimation 0.5s ease forwards;
+}
+
+// 消息已读标记
+.read-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3182ce;
+  margin-left: 4px;
+  margin-top: 4px;
+}
+
+// 滚动到最新消息按钮
+.scroll-to-bottom {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #3182ce;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.scroll-to-bottom.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-bottom:hover {
+  background-color: #2c5aa0;
+  transform: translateY(-2px);
+}
+
+// 打字指示器样式
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background-color: #f5f7fa;
+  border-radius: 16px;
+  width: fit-content;
+  margin-bottom: 16px;
+}
+
+html.dark .typing-indicator {
+  background-color: #2d3748;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #666;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
 }

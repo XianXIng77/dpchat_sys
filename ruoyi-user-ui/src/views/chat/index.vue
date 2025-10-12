@@ -356,6 +356,19 @@ const ychat = computed(() => {
   return { text, dateTime: t("chat.preview") } as Chat.Chat
 })
 
+// 处理示例问题点击
+defineExpose({
+  handleExampleClick
+})
+
+function handleExampleClick(example: string) {
+  prompt.value = example
+  // 聚焦到输入框
+  if (inputRef.value) {
+    inputRef.value?.focus()
+  }
+}
+
 </script>
 
 <template>
@@ -375,28 +388,55 @@ const ychat = computed(() => {
 
             </div>
 
-            <div class="gpts-box" v-else>
-              <br>
-
-              <br>
-              <div v-if="local !== 'draw'">
-                <div class="help">
-                  <div class="ai-icon">
-                    <IconSvg icon="chatGPT" :width="isMobile ? '32px' : '64px'" :height="isMobile ? '32px' : '64px'">
-                    </IconSvg>
+            <div class="welcome-container" v-else>
+              <div class="welcome-card">
+                <div class="welcome-header">
+                  <div class="ai-icon animated-pulse">
+                    <IconSvg icon="chatGPT" :width="isMobile ? '32px' : '64px'" :height="isMobile ? '32px' : '64px'"></IconSvg>
                   </div>
-
-                  <div class="text"
-                    :style="{ padding: isMobile ? '22px 10px' : '22px 27px 5px', 'line-height': isMobile ? '20px' : '28px' }">
-                    <p class="title">
-                      {{ t('chat.helpTitle') }}
-                    </p>
-                    <p style="font-weight: bold" v-for="(item, index) in t('chat.helpcontent').split(';')" :key="index">{{ item }}</p>
+                  <h2 class="welcome-title">{{ t('chat.helpTitle') }}</h2>
+                </div>
+                
+                <div class="welcome-content">
+                  <div class="welcome-description">
+                    👨‍⚕️ 您好！我是您的家庭用药科普助手，专业为您解答各类用药问题，提供科学、安全的用药指导。
+                  </div>
+                  
+                  <div class="welcome-features">
+                    <div class="feature-item">
+                      <SvgIcon icon="ri:check-circle-line" class="feature-icon" size="16" />
+                      <span>药品使用说明与注意事项</span>
+                    </div>
+                    <div class="feature-item">
+                      <SvgIcon icon="ri:check-circle-line" class="feature-icon" size="16" />
+                      <span>药物相互作用查询</span>
+                    </div>
+                    <div class="feature-item">
+                      <SvgIcon icon="ri:check-circle-line" class="feature-icon" size="16" />
+                      <span>儿童、老人特殊用药指导</span>
+                    </div>
+                    <div class="feature-item">
+                      <SvgIcon icon="ri:check-circle-line" class="feature-icon" size="16" />
+                      <span>常见疾病用药建议</span>
+                    </div>
+                  </div>
+                  
+                  <div class="welcome-examples">
+                    <p class="examples-title">💡 您可以尝试这样提问：</p>
+                    <div class="examples-grid">
+                      <div class="example-item" v-for="(example, idx) in [
+                        '退烧药和感冒药可以一起吃吗？', 
+                        '儿童退烧药的正确使用方法',
+                        '高血压患者用药注意事项',
+                        '抗生素的使用误区有哪些？'
+                      ]" :key="idx" @click="handleExampleClick(example)">
+                        {{ example }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </template>
 
           <template v-else>
@@ -466,6 +506,286 @@ const ychat = computed(() => {
   text-overflow: ellipsis;
   font-size: 16px;
   font-weight: 500;
+}
+
+/* 聊天内容区域样式优化 */
+.chat-content {
+  background-color: #f9fafb;
+  background-image: 
+    radial-gradient(#e5e7eb 0.5px, transparent 0.5px),
+    radial-gradient(#e5e7eb 0.5px, #f9fafb 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  transition: all 0.3s ease;
+}
+
+.dark .chat-content {
+  background-color: #111827;
+  background-image: 
+    radial-gradient(#374151 0.5px, transparent 0.5px),
+    radial-gradient(#374151 0.5px, #111827 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+/* 输入框区域样式优化 */
+.footer-content {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dark .footer-content {
+  background-color: rgba(17, 24, 39, 0.8);
+  border-top: 1px solid #374151;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 按钮样式优化 */
+.n-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.n-button:active {
+  transform: translateY(0);
+}
+
+/* 输入框样式优化 */
+.n-input-wrapper {
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  transition: all 0.3s ease;
+}
+
+.n-input-wrapper:hover {
+  border-color: #d1d5db !important;
+}
+
+.n-input-wrapper:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.dark .n-input-wrapper {
+  border-color: #374151 !important;
+}
+
+.dark .n-input-wrapper:hover {
+  border-color: #4b5563 !important;
+}
+
+.dark .n-input-wrapper:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* 已读标记样式 */
+.read-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* 主题切换动画 */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 全局聊天文本样式 */
+#scrollRef {
+  font-size: 1.2rem;
+}
+
+/* 输入框文本样式 */
+.n-input {
+  font-size: 1.2rem !important;
+}
+
+/* 欢迎界面样式 */
+.welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.welcome-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dark .welcome-card {
+  background: #1f2937;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-header {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.welcome-title {
+  font-size: 2rem; /* 进一步增大标题字体 */
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.welcome-content {
+  padding: 2rem;
+}
+
+.welcome-description {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  font-size: 1.25rem; /* 进一步增大描述字体 */
+}
+
+.dark .welcome-description {
+  color: #d1d5db;
+}
+
+.welcome-features {
+  margin-bottom: 2rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  color: #4b5563;
+  font-size: 1.2rem; /* 进一步增大功能列表字体 */
+}
+
+.dark .feature-item {
+  color: #9ca3af;
+}
+
+.feature-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.welcome-examples {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.dark .welcome-examples {
+  background: #111827;
+}
+
+.examples-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+  font-size: 1.25rem; /* 进一步增大示例标题字体 */
+}
+
+.dark .examples-title {
+  color: #f9fafb;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.example-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.15rem; /* 进一步增大示例问题字体 */
+  color: #374151;
+}
+
+.dark .example-item {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+.example-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #6366f1;
+}
+
+.dark .example-item:hover {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+/* 动画效果 */
+.animated-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 640px) {
+  .welcome-container {
+    padding: 1rem;
+  }
+  
+  .welcome-card {
+    border-radius: 12px;
+  }
+  
+  .welcome-header,
+  .welcome-content {
+    padding: 1.5rem;
+  }
+  
+  .examples-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 </style>

@@ -129,69 +129,60 @@ function handleRegenerate2() {
 <template>
   <div
     ref="messageRef"
-    class="flex w-full mb-8 overflow-hidden"
+    class="message-wrapper theme-transition"
     :class="[{ 'flex-row-reverse': inversion }]"
   >
-    <div
-      class="flex items-center justify-center flex-shrink-0 h-8 overflow-hidden rounded-full basis-8"
-      :class="[inversion ? 'ml-2' : 'mr-2']" v-if="!inversion">
-      <AvatarComponent :image="inversion" :logo="chat.logo"/>
+    <div class="avatar-container flex-shrink-0" :class="[inversion ? 'ml-2' : 'mr-2']">
+      <AvatarComponent :image="inversion" :logo="chat.logo" />
     </div>
-    <div class="overflow-hidden text-sm " :class="[inversion ? 'items-end' : 'items-start']">
-      <p class="text-xs group  text-[#b4bbc4] flex  items-center space-x-2 " :class="[inversion ? 'justify-end' : 'justify-start']">
-        <!-- <span>{{ dateTime }}</span>
-        <span v-if="chat.model"  class="text-[#b4bbc4]/50">{{ chat.model }}</span> -->
-        <!-- <span>{{ chat.opt?.progress }}</span> -->
-        <template  v-if="chat.opt?.status=='SUCCESS'">
-          <SvgIcon icon="ri:restart-line" @click="sendReload"  class="cursor-pointer text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300 " ></SvgIcon>
+    <div class="overflow-hidden text-sm">
+      <p class="text-xs group text-[#b4bbc4] flex items-center space-x-2 mb-1" :class="[inversion ? 'justify-end' : 'justify-start']">
+        <span>{{ dateTime }}</span>
+        <span v-if="chat.model" class="text-[#b4bbc4]/50 status-tag">{{ chat.model }}</span>
+        <template v-if="chat.opt?.status=='SUCCESS'">
+          <SvgIcon icon="ri:restart-line" @click="sendReload" class="cursor-pointer text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300" ></SvgIcon>
           
           <div @click="getSeed(chat, message )" class="cursor-pointer">
             <span v-if="chat.opt?.seed">Seed:{{ chat.opt?.seed }}</span>
             <span v-else>Seed</span>
           </div>
-          <!-- <a :href=" mjImgUrl(chat.opt?.imageUrl)" class="hidden group-hover:block active  cursor-pointer underline " target="_blank">{{ $t('mj.ulink') }}</a> -->
         </template>
+          <!-- <a :href=" mjImgUrl(chat.opt?.imageUrl)" class="hidden group-hover:block active  cursor-pointer underline " target="_blank">{{ $t('mj.ulink') }}</a> -->
       </p>
       
-      <div  class="flex items-end gap-1"
-        :class="[inversion ? 'flex-row-reverse' : 'flex-row']" > 
-        <TextComponent 
-          ref="textRef"
-          :inversion="inversion"
-          :error="error"
-          :text="text"
-          :loading="loading"
-          :as-raw-text="asRawText"
-          :chat="chat"
-        />
-        <!-- <div class="flex flex-col" v-if="!chat.mjID && chat.model!='dall-e-3' && chat.model!='dall-e-2' "> -->
-        <div class="flex flex-col" v-if="!chat.mjID">
-          <!-- <button
-            v-if="!inversion "
-            class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
-            @click="handleRegenerate"
-          >
-            <SvgIcon icon="ri:restart-line" />
-          </button> -->
-          <button
-            v-if="!inversion "
-            class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
-            @click="handleRegenerate2"
-          >
-            <SvgIcon icon="ri:restart-line" />
-          </button>
-          <NDropdown
-            :trigger="isMobile ? 'click' : 'hover'"
-            :placement="!inversion ? 'right' : 'left'"
-            :options="options"
-            @select="handleSelect" 
-          >
-            <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
-              <SvgIcon icon="ri:more-2-fill" />
+      <div class="flex items-end gap-1" :class="[inversion ? 'flex-row-reverse' : 'flex-row']">
+        <div class="message-wrap theme-transition" :class="[inversion ? 'message-request' : 'message-reply']">
+          <!-- 消息操作按钮 -->
+          <div class="message-actions">
+            <button v-if="!inversion" class="action-button" @click="handleRegenerate2" title="重新生成">
+              <SvgIcon icon="ri:restart-line" size="14" />
             </button>
-          </NDropdown>
+            <NDropdown
+              :trigger="'click'"
+              placement="top"
+              :options="options"
+              @select="handleSelect"
+            >
+              <button class="action-button" title="更多选项">
+                <SvgIcon icon="ri:more-2-fill" size="14" />
+              </button>
+            </NDropdown>
+          </div>
+          
+          <TextComponent 
+            ref="textRef"
+            :inversion="inversion"
+            :error="error"
+            :text="text"
+            :loading="loading"
+            :as-raw-text="asRawText"
+            :chat="chat"
+          />
         </div>
       </div>
     </div>
+    
+    <!-- 已读标记 -->
+    <div v-if="inversion" class="read-indicator"></div>
   </div>
 </template>

@@ -51,12 +51,13 @@ mdi.use(mdKatex, { blockClass: 'katexmath-block rounded-md p-[10px]', errorColor
 const wrapClass = computed(() => {
   return [
     'text-wrap',
-    'min-w-[20px]','max-w-[810px]',
-    'rounded-md',
+    'min-w-[20px]',
+    'max-w-[810px]',
+    'rounded-lg',
     isMobile.value ? 'p-2' : 'px-3 pb-2',
-    props.inversion ? 'bg-[#d2f9d1]' : 'bg-[#f4f6f8]',
-    props.inversion ? 'dark:bg-[#a1dc95]' : 'dark:bg-[#1e1e20]',
     props.inversion ? 'message-request' : 'message-reply',
+    props.inversion ? 'bg-gradient-request' : 'bg-gradient-reply',
+    props.inversion ? 'dark:bg-gradient-request-dark' : 'dark:bg-gradient-reply-dark',
     { 'text-red-500': props.error },
   ]
 })
